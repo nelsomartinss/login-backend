@@ -1,5 +1,7 @@
 import { Controller, Post, Body, ConflictException, BadRequestException } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { RegisterDto } from './dto/register.dto';
+import { LoginDto } from './dto/login.dto';
 
 @Controller('auth') // prefixo auth/* - definir todos os endpoints que começam com auth
 // auth/* tudo que começa com /auth/
@@ -7,10 +9,10 @@ export class AuthController {
     constructor(private readonly authService: AuthService) { }
 
     @Post('register') // define o endpoint POST/auth/register
-    async register(@Body() body: { email: string, password: string }) {     
+    async register(@Body() dto: RegisterDto) {
         // capturando erros
         try {
-            return await this.authService.register(body.email, body.password)
+            return await this.authService.register(dto.email, dto.password)
         } catch (error) {
             // trata erro E11000 (chave duplicada) - duas requisções podem chegar ao mesmo tempo, ambas fazem o findByEmail e nenhuma encontra o usuario, ambas fazem o createUser() e o mongodb vai tentar criar dois docs com o mesmo email e vai dar erro E11000
             if (error.code === 11000) {
@@ -22,7 +24,7 @@ export class AuthController {
     }
 
     @Post('login') // POST /auth/login
-    async login(@Body() body: { email: string; password: string }) {
-        return this.authService.validateUser(body.email, body.password);
+    async login(@Body() dto: LoginDto) {
+        return this.authService.validateUser(dto.email, dto.password);
     }
 }
