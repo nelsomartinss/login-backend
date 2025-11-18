@@ -1,30 +1,30 @@
-import { Controller, Post, Body, ConflictException, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Body, ConflictException, BadRequestException, HttpCode } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 
-@Controller('auth') // prefixo auth/* - definir todos os endpoints que começam com auth
-// auth/* tudo que começa com /auth/
+@Controller('auth') 
 export class AuthController {
     constructor(private readonly authService: AuthService) { }
 
-    @Post('register') // define o endpoint POST/auth/register
+    @Post('register') 
     async register(@Body() dto: RegisterDto) {
-        // capturando erros
         try {
             return await this.authService.register(dto.email, dto.password)
         } catch (error) {
-            // trata erro E11000 (chave duplicada) - duas requisções podem chegar ao mesmo tempo, ambas fazem o findByEmail e nenhuma encontra o usuario, ambas fazem o createUser() e o mongodb vai tentar criar dois docs com o mesmo email e vai dar erro E11000
+            
             if (error.code === 11000) {
                 throw new ConflictException('Alguém já está utilizando esse e-mail!')
-            } // retorna o http 409 - conflito
+            }
 
-            throw new BadRequestException('Falha no registro.'); // qualquer outro erro retorna o 400.
+            throw new BadRequestException('Falha no registro.'); 
         }
     }
 
     @Post('login') // POST /auth/login
+    @HttpCode(200)
     async login(@Body() dto: LoginDto) {
-        return this.authService.validateUser(dto.email, dto.password);
+        const user = await this.authService.validateUser(dto.email, dto.password);
+        return user;
     }
 }
