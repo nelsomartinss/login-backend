@@ -1,48 +1,52 @@
-import { Injectable, ConflictException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { UserService } from '../user/user.service';
 
 @Injectable()
 export class AuthService {
-    constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) {}
 
-    async register(email: string, password: string) {
-        const existing = await this.userService.findByEmail(email);
+  async register(email: string, password: string) {
+    const existing = await this.userService.findByEmail(email);
 
-        if (existing) {
-            throw new ConflictException('Alguém já está utilizando esse e-mail!');
-        }
-
-        const passwordHash = await bcrypt.hash(password, 10);
-
-        const created = await this.userService.createUser(email, passwordHash);
-
-        const plain = created.toObject ? created.toObject() : created;
-        const { passwordHash: _, ...safe } = plain;
-
-        return safe;
+    if (existing) {
+      throw new ConflictException('Alguém já está utilizando esse e-mail!');
     }
 
-    async validateUser(email: string, password: string) {
-        const user = await this.userService.findByEmail(email);
+    const passwordHash = await bcrypt.hash(password, 10);
 
-        if (!user) {
-            throw new UnauthorizedException('Credenciais inválidas');
-        }
+    const created = await this.userService.createUser(email, passwordHash);
 
-        const isMatch = await bcrypt.compare(password, user.passwordHash);
+    const plain = created.toObject ? created.toObject() : created;
+    const { passwordHash: _, ...safe } = plain;
 
-        if (!isMatch) {
-            throw new UnauthorizedException('Credenciais inválidas');
-        }
+    return safe;
+  }
 
-        const plain = user.toObject ? user.toObject() : user;
-        const { passwordHash: _, ...safe } = plain;
+  async validateUser(email: string, password: string) {
+    const user = await this.userService.findByEmail(email);
 
-        return safe;
+    if (!user) {
+      throw new UnauthorizedException('Credenciais inválidas');
     }
 
-    async login(user: any) {
-        return { message: 'JWT não implementado ainda', user };
+    const isMatch = await bcrypt.compare(password, user.passwordHash);
+
+    if (!isMatch) {
+      throw new UnauthorizedException('Credenciais inválidas');
     }
+
+    const plain = user.toObject ? user.toObject() : user;
+    const { passwordHash: _, ...safe } = plain;
+
+    return safe;
+  }
+
+  async login(user: any) {
+    return { message: 'JWT não implementado ainda', user };
+  }
 }
