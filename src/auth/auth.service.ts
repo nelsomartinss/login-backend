@@ -23,7 +23,6 @@ export class AuthService {
 
     const plain = created.toObject ? created.toObject() : created;
     const { passwordHash: _, ...safe } = plain;
-
     return safe;
   }
 
@@ -42,7 +41,6 @@ export class AuthService {
 
     const plain = user.toObject ? user.toObject() : user;
     const { passwordHash: _, ...safe } = plain;
-
     return safe;
   }
 
