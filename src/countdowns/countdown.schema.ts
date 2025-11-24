@@ -15,7 +15,7 @@ export class Countdown {
     title: string;
 
     // Isso é a data de início. Algo que se não for gerador o service vai definir como new Date()
-    @Prop({ type: Date, required: true })
+    @Prop({ required: true, default: () => new Date() })
     startAt: Date;
 }
 
