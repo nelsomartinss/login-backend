@@ -7,12 +7,14 @@ import { MongooseModule } from '@nestjs/mongoose'; // conexão com o banco mongo
 
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
+import { CountdownsModule } from './countdowns/countdowns.module';
 
 @Module({
   imports: [
     MongooseModule.forRoot('mongodb://localhost:27017/auth'),
     AuthModule,
     UserModule,
+    CountdownsModule,
   ], // criando uma conexão principal com o banco usando a url passada
   controllers: [AppController], // responsavel por receber as requisições http
   providers: [AppService], // logica de negocio, acesso ao banco, validações, regras do sistema
