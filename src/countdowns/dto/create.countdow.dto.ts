@@ -1,10 +1,19 @@
-import { IsString, MinLength } from 'class-validator';
+// validar os dados recebidos no POST/countdowns
+// garente que apenas o title e  startAt (opcional) cheguem no controller
+// codigo seguro
+
+import { IsNotEmpty, IsOptional, IsString, MinLength, IsDateString } from 'class-validator';
 
 export class CreateCountdownDto {
+ 
+  // title obrigatorio, tamanho minimo de 1 caractere
   @IsString()
-  @MinLength(2)
+  @IsNotEmpty()
+  @MinLength(1)
   title: string;
-
-  @IsString()
-  userId: string;
+  
+  // startAt é opcional
+  @IsOptional()
+  @IsDateString() // isso é usado para aceitar datas ISO caso o front queira enviar no futuro
+  startAt: string;
 }
